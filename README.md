@@ -20,10 +20,8 @@ pip install -r requirements.txt
 ```
 Run (CLI)
 ```
-python run.py --track Australia \
-  --years 2022 2023 2024 \
-  --race-dates 2022:2022-04-10 2023:2023-04-02 2024:2024-03-24 \
-  --date 2025-03-16
+python predict_strategies.py
+
 Example output:
 Stop-count acc: 0.933
 FirstPit: CV integer-lap MAE = 8.02 (blend w=0.85)
