@@ -13,14 +13,17 @@ Predict pit windows (1/2/3-stop) using FastF1 race data + weather. Models blend 
 - Quick ablation + permutation importance for `CtorRating`.
 
 ## Install
+```
 python -m venv .venv
 source .venv/bin/activate    # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-
+```
 Run (CLI)
-python predict_strategies.py
- 
-
+```
+python run.py --track Australia \
+  --years 2022 2023 2024 \
+  --race-dates 2022:2022-04-10 2023:2023-04-02 2024:2024-03-24 \
+  --date 2025-03-16
 Example output:
 Stop-count acc: 0.933
 FirstPit: CV integer-lap MAE = 8.02 (blend w=0.85)
@@ -32,28 +35,39 @@ Overall possible strategies for Australia on 2025-03-16:
 1-stop │ C4 → C3 → C3         │ 7–14     │ 30–45
 2-stop │ C3 → C4 → C3         │ 16–24    │ 30–45
 3-stop │ C5 → C3 → C3         │ 6–12     │ 29–43
+```
 
-Data & Caching
-FastF1 cache: cache_folder/ (Create in Route Directory).
-Weather cache: .weather_cache/ (via requests_cache).
+## Data & Caching
+- FastF1 cache: cache_folder/ (auto-created).
+- Weather cache: .weather_cache/ (via requests_cache).
 
-Tips to Improve MAE
-Train on more seasons (mind regulation changes).
-Add/keep pace proxies: qualifying best, early/late median race pace.
-Calibrate COMPOUND_LIFE_BASE and TRACK_TYRE_MULT per circuit.
-Use fractional pit targets (pit_lap / race_laps) with GroupKFold by year when you expand to multi-track training.
-Track-level priors for SC/VSC help.
+## Tips to Improve MAE
+- Train on more seasons (mind regulation changes).
+- Add/keep pace proxies: qualifying best, early/late median race pace.
+- Calibrate COMPOUND_LIFE_BASE and TRACK_TYRE_MULT per circuit.
 
-Contributions welcome
+- Use fractional pit targets (pit_lap / race_laps) with GroupKFold by year when you expand to multi-track training.
+- Track-level priors for SC/VSC help.
+## Contributions welcome
 If you can improve feature engineering, priors, or modeling, feel free to open a PR or issue. Ideas:
-Better pit-loss estimation per track, including in/out delta modeling.
-Safety car / VSC sequence features (first 10 laps vs late).
-Driver/constructor pace embeddings instead of a static rating.
+- Better pit-loss estimation per track, including in/out delta modeling.
+- Safety car / VSC sequence features (first 10 laps vs late).
+- Driver/constructor pace embeddings instead of a static rating.
 
-Troubleshooting
-ValueError: could not convert string to float: 'SOFT'
+## Troubleshooting
+- ValueError: could not convert string to float: 'SOFT'
 Ensure categoricals are encoded for RF (the repo encodes StartCompound & Track; CatBoost can consume strings).
-Open-Meteo “out of allowed range”
+- Open-Meteo “out of allowed range”
 The code falls back to the archive endpoint automatically.
-Session name mismatch
+- Session name mismatch
 FastF1 sometimes changes event names; verify the track string matches FastF1.
+
+## requirements.txt
+- numpy>=1.24
+- pandas>=2.0
+- scikit-learn>=1.3
+- catboost>=1.2
+- fastf1>=3.1.7
+- requests-cache>=1.1
+- retry-requests>=2.0.0
+- openmeteo-requests>=1.2.0
